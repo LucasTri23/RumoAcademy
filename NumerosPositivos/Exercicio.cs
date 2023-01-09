@@ -1,26 +1,58 @@
-﻿namespace NumerosPositivos
+﻿using System;
+using System.Collections.Generic;
+
+
+namespace NumerosPositivos
 {
     class Exercicio
     {
         static void Main(string[] args)
         {
-            int numeros;
+            // criando uma lista para guardar os numeros
+            List<int> numeros = new List<int>();
 
-            for (int i = 0; i < 15; i++)
+            // loop pedindo os numeros, o programa encerra quando o usuario digitar 'sair'
+            while (true)
             {
-                Console.Write("Insira um numero: ");
-                numeros = int.Parse(Console.ReadLine());
+                Console.Write("Digite um número inteiro (ou digite 'sair' para encerrar):");
+                string input = Console.ReadLine();
 
-                if (numeros > 0)
+                if (input.ToLower() == "sair")
                 {
-                    Console.WriteLine(numeros + " Positivo!");
+                    break;
                 }
 
-                else if (numeros < 0)
+                // adiciona os numeros dentro da variavel
+                try
                 {
-                    Console.WriteLine(numeros + " Negativo!");
+                    int num = int.Parse(input);
+                    numeros.Add(num);
                 }
 
+                // se a pessoa digitar um numero decimal ou string
+                catch (FormatException)
+                {
+                    Console.WriteLine("Por favor, digite um número válido.");
+                }
+            }
+
+            //pesquisei como filtrar os numeros positivos no chatbotgpt e fiz esse filtro para numeros positivos
+            List<int> numerosPositivos = numeros.Where(n => n > 0).ToList();
+
+            if (numerosPositivos.Count > 0)
+            {
+
+                // exibindo os numeros positivos
+                Console.WriteLine("Números positivos:");
+                foreach (int numero in numerosPositivos)
+                {
+                    Console.WriteLine(numero);
+                }
+            }
+            else
+            {
+                // quando nao ha numeros positivos
+                Console.WriteLine("Não há números positivos.");
             }
 
         }
