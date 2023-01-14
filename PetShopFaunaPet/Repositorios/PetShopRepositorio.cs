@@ -1,5 +1,4 @@
 ﻿using PetShopFaunaPet.Models;
-using PetShopFaunaPet.Repositorios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace PetShopFaunaPet.Repositorios
 {
     public class PetShopRepositorio
     {
-        private readonly string _caminho = "C:\\Projetos\\Database\\produto.csv";
+        private readonly string _caminho = "C:\\Projetos\\DataBase\\clientes.csv";
         private List<Clientes> ListagemClientes = new List<Clientes>();
         public PetShopRepositorio()
         {

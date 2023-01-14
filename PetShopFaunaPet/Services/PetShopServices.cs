@@ -116,6 +116,12 @@ namespace PetShopFaunaPet.Services
 
             Console.WriteLine($"Qual o CPF do cliente {nomeCliente}");
             var cpf = Console.ReadLine();
+            if (!Utility.Validacoes.ValidarTamanhoTexto(cpf, 1, 11)) ;
+            {
+                Console.WriteLine("CPF invalido!");
+                Console.ReadKey();
+                return null;
+            }
 
             Console.WriteLine($"Qual a data de nascimento do cliente {nomeCliente}");
             var data = Console.ReadLine();
@@ -136,7 +142,6 @@ namespace PetShopFaunaPet.Services
                 DataDeNascimento = dataNascimento
             };
         }
-
 
         private int? PerguntarId(string nomeAcao)
         {
@@ -165,7 +170,6 @@ namespace PetShopFaunaPet.Services
             {
                 return idInformado;
             }
-
         }
     }
 }

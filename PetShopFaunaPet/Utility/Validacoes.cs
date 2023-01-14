@@ -35,5 +35,16 @@ namespace PetShopFaunaPet.Utility
 
             return true;
         }
+
+
+        public static bool ValidarCPF(string? texto, short min, short max)
+        {
+            if (string.IsNullOrEmpty(texto)
+                || texto.Trim().Length < min
+                || texto.Trim().Length > max)
+                return false;
+
+            return true;
+        }
     }
 }
