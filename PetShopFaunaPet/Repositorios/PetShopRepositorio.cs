@@ -20,12 +20,11 @@ namespace PetShopFaunaPet.Repositorios
             }
         }
 
+
         public void Inserir(Clientes cliente)
         {
-            var indentificador = ProximoIndentificador();
-
             var sw = new StreamWriter(_caminho, true);
-            sw.WriteLine(GerarLinhaCliente(indentificador, cliente));
+            sw.WriteLine(GerarLinhaCliente(cliente));
             sw.Close();
         }
 
@@ -35,29 +34,12 @@ namespace PetShopFaunaPet.Repositorios
             return ListagemClientes;
         }
 
-        public bool SeExiste(int indentificadorCliente)
+        public bool SeExiste(string indentificadorCliente)
         {
             CarregarClientes();
-            return ListagemClientes.Any(x => x.IdCliente == indentificadorCliente);
+            return ListagemClientes.Any(x => x.CPF == indentificadorCliente);
         }
 
-        public void Atualizar(Clientes cliente)
-        {
-            CarregarClientes();
-
-            var posicao = ListagemClientes.FindIndex(x => x.IdCliente == cliente.IdCliente);
-            ListagemClientes[posicao] = cliente;
-            RegravarCliente(ListagemClientes);
-        }
-        
-        public void Desativar(int indentificarCliente)
-        {
-            CarregarClientes();
-
-            var posicao = ListagemClientes.FindIndex(x => x.IdCliente == indentificarCliente);
-            ListagemClientes.RemoveAt(posicao);
-            RegravarCliente(ListagemClientes);
-        }
 
         private void CarregarClientes()
         {
@@ -72,45 +54,25 @@ namespace PetShopFaunaPet.Repositorios
 
                 ListagemClientes.Add(LinhaTextoParaClientes(linha));
             }
+
+            sr.Close();
         } 
-
-        private int ProximoIndentificador()
-        {
-            CarregarClientes();
-
-            if (ListagemClientes.Count == 0)
-                return 1;
-
-            return ListagemClientes.Max(x => x.IdCliente);
-        }
 
         private Clientes LinhaTextoParaClientes(string linha)
         {
             var colunas = linha.Split(';');
 
             var cliente = new Clientes();
-            cliente.IdCliente = int.Parse(colunas[0]);
-            cliente.Nome = colunas[1];
-            cliente.CPF = colunas[2];
-            cliente.DataDeNascimento = DateTime.Parse(colunas[3]);
+            cliente.Nome = colunas[0];
+            cliente.CPF = (colunas[1]);
+            cliente.DataDeNascimento = DateTime.Parse(colunas[2]);
 
             return cliente;
         }
 
-        private void RegravarCliente(List<Clientes> clientes)
+        private string GerarLinhaCliente(Clientes cliente)
         {
-            var sw = new StreamWriter(_caminho);
-
-            foreach (var cliente in clientes.OrderBy(x => x.IdCliente))
-            {
-                sw.WriteLine(GerarLinhaCliente(cliente.IdCliente, cliente));
-            }
-
-        }
-
-        private string GerarLinhaCliente(int indentificador, Clientes cliente)
-        {
-            return $"{indentificador};{cliente.Nome};{cliente.CPF};{cliente.DataDeNascimento}";
+            return $"{cliente.Nome};{cliente.CPF};{cliente.DataDeNascimento}";
         }
     }
 }

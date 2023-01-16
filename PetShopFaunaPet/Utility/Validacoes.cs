@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PetShopFaunaPet.Utility
 {
-    internal class Validacoes
+    public class Validacoes
     {
         public static bool ValidarSeDataBrasileiraEIdade(string dataDeNascimeto)
         {
@@ -17,10 +18,10 @@ namespace PetShopFaunaPet.Utility
             if (!DateTime.TryParseExact(dataDeNascimeto, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var data))
                 return false;
 
-            if (DateTime.Now.Subtract(data).TotalDays / 365.25 < 16)
+            if (DateTime.Now.Subtract(data).TotalDays / 365 < 16)
                 return false;
 
-            if (DateTime.Now.Subtract(data).TotalDays / 365.25 > 120)
+            if (DateTime.Now.Subtract(data).TotalDays / 365 > 120)
                 return false;
 
             return true;
@@ -36,12 +37,11 @@ namespace PetShopFaunaPet.Utility
             return true;
         }
 
-
-        public static bool ValidarCPF(string? texto, short min, short max)
+        public static bool ValidarCPF(string? texto)
         {
-            if (string.IsNullOrEmpty(texto)
-                || texto.Trim().Length < min
-                || texto.Trim().Length > max)
+            texto = Regex.Replace(texto, "[^0-9]", "");
+
+            if (string.IsNullOrWhiteSpace(texto) || texto.Trim().Length != 11)
                 return false;
 
             return true;

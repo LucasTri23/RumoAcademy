@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PetShopFaunaPet.Services
@@ -25,8 +27,6 @@ namespace PetShopFaunaPet.Services
                 Console.WriteLine("O que você deseja fazer ?");
                 Console.WriteLine("1. Listar Clientes");
                 Console.WriteLine("2. Cadastrar Cliente");
-                Console.WriteLine("3. Atualizar Cliente");
-                Console.WriteLine("4. Remover Cliente");
                 var resposta = Console.ReadLine();
                 Console.Clear();
 
@@ -38,17 +38,16 @@ namespace PetShopFaunaPet.Services
                     case "2":
                         Cadastrar();
                         break;
-                    case "3":
-                        Atualizar();
-                        break;
-                    case "4":
-                        Remover();
-                        break;
                     default:
                         Console.Write("Selecione uma opção valida!");
                         break;
                 }
             }
+        }
+
+        public void AdicionarMascaraCPF(string cpf)
+        {
+            
         }
 
         private void Cadastrar()
@@ -68,62 +67,44 @@ namespace PetShopFaunaPet.Services
         {
             var cliente = _repositorio.Listar();
             Console.WriteLine("Deseja também listar os aniversariantes do mês? S/N");
-            if (Console.ReadLine() == "N")
+            if (Console.ReadLine() == "S")
                 cliente = cliente.Where(x => x.DataDeNascimento.Month == DateTime.Now.Month == true).ToList();
             Console.Clear();
 
             foreach(var c in cliente)
             {
-                Console.WriteLine($"Indentificador => {c.IdCliente};Nome =>{c.Nome};CPF =>{c.CPF}; DataDeNascimento => {c.DataDeNascimento}");
+                Console.WriteLine($"Nome => {c.Nome} ;CPF => {c.CPF}; DataDeNascimento => {c.DataDeNascimento}");
             }
 
             Console.WriteLine("Para sair da listagem aperte qualquer tecla!");
             Console.ReadKey();
         }
 
-        private void Atualizar()
-        {
-            var identificador = PerguntarId("atualizar");
-            if (!identificador.HasValue)
-                return;
-
-            var cliente = ColetarDadosCliente();
-            if (cliente is null)
-                return;
-
-            cliente.IdCliente = identificador.Value;
-            _repositorio.Atualizar(cliente);
-        }
-
-        private void Remover()
-        {
-            var indentificador = PerguntarId("desativar");
-            if (indentificador.HasValue)
-                return;
-            _repositorio.Desativar(indentificador.Value);
-        }
-
         private Clientes? ColetarDadosCliente()
         {
             Console.WriteLine("Qual o nome do cliente que você deseja cadastrar? ");
             var nomeCliente = Console.ReadLine();
-            if (!Utility.Validacoes.ValidarTamanhoTexto(nomeCliente, 3, 80));
+            if (!Utility.Validacoes.ValidarTamanhoTexto(nomeCliente, 3, 80))
             {
                 Console.WriteLine("O nome do cliente pode ter no minimo 3 letras e no maximo 80");
                 Console.ReadKey();
                 return null;
             }
 
-            Console.WriteLine($"Qual o CPF do cliente {nomeCliente}");
-            var cpf = Console.ReadLine();
-            if (!Utility.Validacoes.ValidarTamanhoTexto(cpf, 1, 11)) ;
+            Console.WriteLine($"Qual o CPF do {nomeCliente}?");
+            var cpf = (Console.ReadLine());
+
+            //tentei mascarar e nao consegui
+            if (!Utility.Validacoes.ValidarTamanhoTexto(cpf, 11, 11) || !Regex.IsMatch(cpf, @"^[0-9]+$"))
             {
                 Console.WriteLine("CPF invalido!");
                 Console.ReadKey();
                 return null;
             }
 
-            Console.WriteLine($"Qual a data de nascimento do cliente {nomeCliente}");
+            
+
+            Console.WriteLine($"Qual a data de nascimento do {nomeCliente}?");
             var data = Console.ReadLine();
 
             if (!Utility.Validacoes.ValidarSeDataBrasileiraEIdade(data))
@@ -135,41 +116,52 @@ namespace PetShopFaunaPet.Services
 
             DateTime dataNascimento = DateTime.ParseExact(data, "dd/MM/yyyy", CultureInfo.InvariantCulture);
 
+            // tentei colocar a validação de cpf mas nao entendi muito
+
+
+            /*int[] multiplicador1 = new int[9] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+            int[] multiplicador2 = new int[10] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+            string tempCpf;
+            string digito;
+            int soma;
+            int resto;
+            cpf = cpf.Trim();
+            cpf = cpf.Replace(".", "").Replace("-", "");
+            if (cpf.Length != 11)
+                return false;
+            tempCpf = cpf.Substring(0, 9);
+            soma = 0;
+
+            for (int i = 0; i < 9; i++)
+                soma += int.Parse(tempCpf[i].ToString()) * multiplicador1[i];
+            resto = soma % 11;
+            if (resto < 2)
+                resto = 0;
+            else
+                resto = 11 - resto;
+            digito = resto.ToString();
+            tempCpf = tempCpf + digito;
+            soma = 0;
+            for (int i = 0; i < 10; i++)
+                soma += int.Parse(tempCpf[i].ToString()) * multiplicador2[i];
+            resto = soma % 11;
+            if (resto < 2)
+                resto = 0;
+            else
+                resto = 11 - resto;
+            digito = digito + resto.ToString();
+            if (!cpf.EndsWith(digito))
+                return false;
+            cpf = Convert.ToUInt64(cpf).ToString(@"000\.000\.000\-00");*/
+
+
+
             return new Clientes()
             {
                 Nome = nomeCliente,
                 CPF = cpf,
                 DataDeNascimento = dataNascimento
             };
-        }
-
-        private int? PerguntarId(string nomeAcao)
-        {
-            Console.WriteLine($"Por favor digite o id do cliente para {nomeAcao}?");
-            string indentificadorString = Console.ReadLine();
-
-            if(int.TryParse(indentificadorString, out int id))
-            {
-                return id;
-            }
-            else
-            {
-                Console.WriteLine("O id informado não é valido");
-                Console.ReadKey();
-                return null;
-            }
-
-            var idInformado = Convert.ToInt32(indentificadorString);
-            if (!_repositorio.SeExiste(idInformado))
-            {
-                Console.WriteLine("Este cliente não existe, tente novamente!");
-                Console.ReadKey();
-                return null;
-            }
-            else
-            {
-                return idInformado;
-            }
         }
     }
 }
