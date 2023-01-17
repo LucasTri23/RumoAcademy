@@ -18,10 +18,10 @@ namespace PetShopFaunaPet.Utility
             if (!DateTime.TryParseExact(dataDeNascimeto, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var data))
                 return false;
 
-            if (DateTime.Now.Subtract(data).TotalDays / 365 < 16)
+            if (DateTime.Now.Subtract(data).TotalDays / 365.25 < 16)
                 return false;
 
-            if (DateTime.Now.Subtract(data).TotalDays / 365 > 120)
+            if (DateTime.Now.Subtract(data).TotalDays / 365.25 > 120)
                 return false;
 
             return true;

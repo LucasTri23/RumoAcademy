@@ -45,11 +45,6 @@ namespace PetShopFaunaPet.Services
             }
         }
 
-        public void AdicionarMascaraCPF(string cpf)
-        {
-            
-        }
-
         private void Cadastrar()
         {
             var cliente = ColetarDadosCliente();
@@ -73,7 +68,7 @@ namespace PetShopFaunaPet.Services
 
             foreach(var c in cliente)
             {
-                Console.WriteLine($"Nome => {c.Nome} ;CPF => {c.CPF}; DataDeNascimento => {c.DataDeNascimento}");
+                Console.WriteLine($"Nome => {c.Nome.ToUpper()}; CPF => {c.CPF}; DataDeNascimento => {c.DataDeNascimento}");
             }
 
             Console.WriteLine("Para sair da listagem aperte qualquer tecla!");
@@ -102,7 +97,7 @@ namespace PetShopFaunaPet.Services
                 return null;
             }
 
-            
+            cpf = Convert.ToUInt64(cpf).ToString(@"000\.000\.000\-00");
 
             Console.WriteLine($"Qual a data de nascimento do {nomeCliente}?");
             var data = Console.ReadLine();
